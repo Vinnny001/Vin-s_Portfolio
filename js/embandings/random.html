@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      background: linear-gradient(135deg, #4facfe, #3de073);
       height: 100vh;
       margin: 0;
       display: flex;
@@ -22,6 +22,33 @@
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
       text-align: center;
       width: 320px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* 🎲 Dice animation */
+    .dice {
+      font-size: 40px;
+      display: inline-block;
+      animation: rollSlow 3s linear infinite;
+    }
+
+    @keyframes rollSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .dice.fast {
+      animation: rollFast 0.5s linear infinite;
+    }
+
+    @keyframes rollFast {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(720deg); }
     }
 
     h2 {
@@ -45,46 +72,91 @@
       border: 1px solid #ccc;
       font-size: 14px;
       outline: none;
-      transition: border 0.3s;
+      transition: all 0.3s;
     }
 
     input:focus {
       border-color: #4facfe;
+      box-shadow: 0 0 8px rgba(79, 172, 254, 0.5);
     }
 
     button {
       width: 100%;
       padding: 12px;
-      background: #4facfe;
+      background: #16e053;
       border: none;
       border-radius: 6px;
       color: white;
       font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
+      transition: all 0.2s;
     }
 
     button:hover {
-      background: #3a8de0;
       transform: translateY(-2px);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+    }
+
+    button:active {
+      transform: scale(0.97);
     }
 
     #result {
       margin-top: 20px;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: bold;
       color: #222;
       background: #f4f6f8;
-      padding: 10px;
+      padding: 12px;
       border-radius: 6px;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.4s ease;
     }
+
+    #result.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* 📱 Small screens (phones) */
+@media (max-width: 480px) {
+  .container {
+    width: 90%;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  .dice {
+    font-size: 28px;
+  }
+
+  input {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  button {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  #result {
+    font-size: 22px;
+    padding: 10px;
+  }
+}
   </style>
 </head>
 
 <body>
 
   <div class="container">
-    <h2>🎲 Random Number Generator</h2>
+    <h2><span class="dice" id="dice">🎲</span> Random Number Generator</h2>
 
     <label>Min:</label>
     <input type="number" id="min" value="1">
@@ -103,9 +175,31 @@
     function generate() {
       let min = parseInt(document.getElementById("min").value);
       let max = parseInt(document.getElementById("max").value);
+      let resultEl = document.getElementById("result");
+      let dice = document.getElementById("dice");
 
-      let num = getRandom(min, max);
-      document.getElementById("result").innerText = num;
+      // Speed up dice 🎲
+      dice.classList.add("fast");
+
+      resultEl.classList.remove("show");
+
+      let count = 0;
+      let interval = setInterval(() => {
+        resultEl.innerText = Math.floor(Math.random() * (max - min + 1)) + min;
+        count++;
+
+        if (count > 15) {
+          clearInterval(interval);
+
+          let finalNum = getRandom(min, max);
+          resultEl.innerText = finalNum;
+
+          resultEl.classList.add("show");
+
+          // Return dice to slow spin
+          dice.classList.remove("fast");
+        }
+      }, 50);
     }
   </script>
 
