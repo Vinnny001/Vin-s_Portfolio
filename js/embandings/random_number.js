@@ -1,6 +1,9 @@
 //max=100;min=1;
 
-num= (min, max) => {
+let getRandom= (min, max) => {
     return Math.floor(Math.random()* (max - min + 1)) + min;
 };
-console.log(num(1, 100));
+
+//window.getRandom = getRandom;
+
+//console.log(num(1, 100));
